@@ -1,0 +1,30 @@
+{
+  "name": "AnimationFrameController",
+  "version": "1.0.0",
+  "description": "Controller for requestAnimationFrame",
+  "main": "animationFrameController.js",
+  "scripts": {
+    "test": "new AnimationFrameController"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jasperlinsen/AnimationFrameController.git"
+  },
+  "keywords": [
+    "animation",
+    "frame",
+    "request",
+    "cancel",
+    "controller"
+  ],
+  "author": "Jasper Linsen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jasperlinsen/AnimationFrameController/issues"
+  },
+  "homepage": "https://github.com/jasperlinsen/AnimationFrameController",
+  "devDependencies": {
+    "babel-preset-es2015": "^6.18.0",
+    "gulp-babel": "^6.1.2"
+  }
+}

@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+	<title>Animation Frame Controller</title>
+</head>
+<body>
+
+<input type="button" value="click me" id="clickme" style="position:absolute;" />
+
+<script type="text/javascript" src="../build/AnimationFrameController.js"></script>
+<script type="text/javascript">
+
+var AF = new AnimationFrameController;
+var button = document.getElementById('clickme');
+var animation = false;
+var x = 0, y = 0;
+
+button.addEventListener('click', function( event ){
+	var fromX = x;
+	var fromY = y;
+	var toX = Math.round( Math.random() * (window.innerWidth - button.clientWidth) );
+	var toY = Math.round( Math.random() * (window.innerHeight - button.clientHeight) );
+	AF.remove( animation );
+	AF.add(animation = function( delta, progress ){
+		var now = progress / 2000;
+		if( now >= 1 ){
+			x = toX;
+			y = toY;
+			return false;
+		} else {
+			x = fromX + (toX - fromX) * now;
+			y = fromY + (toY - fromY) * now;
+		}
+	});
+});
+
+AF.add(function(){
+	button.style.left = x + 'px';
+	button.style.top = y + 'px';
+});
+
+</script>
+
+</body>
+</html>
