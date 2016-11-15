@@ -1,0 +1,2 @@
+# AnimationFrameController
+Controller for `requestAnimationFrame`
