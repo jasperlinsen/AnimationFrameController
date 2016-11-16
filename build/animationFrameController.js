@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -24,7 +24,7 @@ var AnimationFrameController = function () {
 	}
 
 	_createClass(AnimationFrameController, [{
-		key: "add",
+		key: 'add',
 		value: function add() {
 			var _this = this;
 
@@ -41,7 +41,7 @@ var AnimationFrameController = function () {
 			if (this.callees.length && this.autostart && this.paused) this.paused = false;
 		}
 	}, {
-		key: "remove",
+		key: 'remove',
 		value: function remove() {
 			var _this2 = this;
 
@@ -59,26 +59,38 @@ var AnimationFrameController = function () {
 			if (this.callees.length <= 0) this.paused = true;
 		}
 	}, {
-		key: "loop",
+		key: 'loop',
 		value: function loop(time) {
 			var _this3 = this;
 
-			if (!this.paused) {
+			try {
 
-				window.requestAnimationFrame(this.loop.bind(this));
+				if (!this.paused) {
+					(function () {
 
-				this.time = time;
+						window.requestAnimationFrame(_this3.loop.bind(_this3));
 
-				this.callees.map(function (handler, index) {
-					var delta = time - _this3.calleesTime[index];
-					return handler(time, delta) === false ? handler : true;
-				}).forEach(function (handler) {
-					return handler !== true ? _this3.remove(handler) : 0;
-				});
+						var delta = time - _this3.time;
+						_this3.time = time;
+
+						_this3.callees.map(function (handler, index) {
+							var progress = time - _this3.calleesTime[index];
+							return handler(delta, progress) === false ? handler : true;
+						}).forEach(function (handler) {
+							return handler !== true ? _this3.remove(handler) : 0;
+						});
+
+						if (typeof _this3.lastCall == 'function') _this3.lastCall(delta);
+					})();
+				}
+			} catch (e) {
+
+				this.paused = true;
+				console.warn('An error has occurred while running the AnimationFrame.', e);
 			}
 		}
 	}, {
-		key: "time",
+		key: 'time',
 		get: function get() {
 			return this._time;
 		},
@@ -88,7 +100,7 @@ var AnimationFrameController = function () {
 			return this._time;
 		}
 	}, {
-		key: "paused",
+		key: 'paused',
 		get: function get() {
 			return this._paused;
 		},

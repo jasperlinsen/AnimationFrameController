@@ -64,18 +64,30 @@ class AnimationFrameController {
 	
 	loop( time ){
 		
-		if( !this.paused ){
+		try {
 		
-			window.requestAnimationFrame( this.loop.bind(this) );
+			if( !this.paused ){
+		
+				window.requestAnimationFrame( this.loop.bind(this) );
 			
-			this.time = time;
+				let delta = time - this.time;
+				this.time = time;
 			
-			this.callees.map(( handler, index ) => {
-				let delta = time - this.calleesTime[index];
-				return handler( time, delta ) === false ? handler : true; 
-			}).forEach(handler => {
-				return handler !== true ? this.remove(handler) : 0; 
-			});
+				this.callees.map(( handler, index ) => {
+					let progress = time - this.calleesTime[index];
+					return handler( delta, progress ) === false ? handler : true; 
+				}).forEach(handler => {
+					return handler !== true ? this.remove(handler) : 0; 
+				});
+			
+				if( typeof this.lastCall == 'function' ) this.lastCall( delta );
+			
+			}
+		
+		} catch(e) {
+		
+			this.paused = true;
+			console.warn('An error has occurred while running the AnimationFrame.', e);
 			
 		}
 		
