@@ -80,8 +80,6 @@ class AnimationFrameController {
 					return handler !== true ? this.remove(handler) : 0; 
 				});
 			
-				if( typeof this.lastCall == 'function' ) this.lastCall( delta );
-			
 			}
 		
 		} catch(e) {

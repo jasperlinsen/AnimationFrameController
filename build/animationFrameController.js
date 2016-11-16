@@ -79,8 +79,6 @@ var AnimationFrameController = function () {
 						}).forEach(function (handler) {
 							return handler !== true ? _this3.remove(handler) : 0;
 						});
-
-						if (typeof _this3.lastCall == 'function') _this3.lastCall(delta);
 					})();
 				}
 			} catch (e) {
