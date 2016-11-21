@@ -19,7 +19,7 @@ const AnimationFrameController = function(){
 			} else {
 				let result = functions[f].handler( newTime - time, newTime - functions[f].time );
 				if( result === false ){
-					AF.remove( functions[f].id );
+					AF.remove([ functions[f].id ]);
 					f--;
 				}
 			}
@@ -48,34 +48,31 @@ const AnimationFrameController = function(){
 			return !!animationFrame;
 		},
 		autostart: true,
-		add( ...handlers ){
-			for( let h = 0; h < handlers.length; h++ ){
-				functions.unshift({
-					'time': -1,
-					'handler': handlers[h],
-					'id': id++
-				});
-				handlers[h] = id;
-			}
+		add( handler ){
+			id++;
+			functions.unshift({
+				'time': -1,
+				'handler': handler,
+				'id': id
+			});
 			if( this.autostart && functions.length ){
 				this.start();
 			}
-			return handlers;
+			return id;
 		},
-		remove( ...handlers ){
-			for( let h = 0; h < handlers.length; h++ ){
-				for( let f = 0; f < functions.length; f++ ){
-					if( functions[f].id === handlers[h] || functions[f].handler === handlers[h] ){
-						handlers[h] = functions[f].handler;
-						functions.splice( f, 1 );
-						f--;
-					}
-				}
-				if( this.autostart && functions.length === 0 ){
-					this.stop();
+		remove( handler ){
+			var returnFunction;
+			for( let f = 0; f < functions.length; f++ ){
+				if( functions[f].id === handler || functions[f].handler === handler ){
+					returnFunction = functions[f].handler;
+					functions.splice( f, 1 );
+					f--;
 				}
 			}
-			return handlers;
+			if( this.autostart && functions.length === 0 ){
+				this.stop();
+			}
+			return returnFunction;
 		},
 		debug(){
 			return {

@@ -19,7 +19,7 @@ var AnimationFrameController = function () {
 			} else {
 				var result = functions[f].handler(newTime - time, newTime - functions[f].time);
 				if (result === false) {
-					AF.remove(functions[f].id);
+					AF.remove([functions[f].id]);
 					f--;
 				}
 			}
@@ -48,42 +48,31 @@ var AnimationFrameController = function () {
 			return !!animationFrame;
 		},
 		autostart: true,
-		add: function add() {
-			for (var _len = arguments.length, handlers = Array(_len), _key = 0; _key < _len; _key++) {
-				handlers[_key] = arguments[_key];
-			}
-
-			for (var h = 0; h < handlers.length; h++) {
-				functions.unshift({
-					'time': -1,
-					'handler': handlers[h],
-					'id': id++
-				});
-				handlers[h] = id;
-			}
+		add: function add(handler) {
+			id++;
+			functions.unshift({
+				'time': -1,
+				'handler': handler,
+				'id': id
+			});
 			if (this.autostart && functions.length) {
 				this.start();
 			}
-			return handlers;
+			return id;
 		},
-		remove: function remove() {
-			for (var _len2 = arguments.length, handlers = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-				handlers[_key2] = arguments[_key2];
-			}
-
-			for (var h = 0; h < handlers.length; h++) {
-				for (var f = 0; f < functions.length; f++) {
-					if (functions[f].id === handlers[h] || functions[f].handler === handlers[h]) {
-						handlers[h] = functions[f].handler;
-						functions.splice(f, 1);
-						f--;
-					}
-				}
-				if (this.autostart && functions.length === 0) {
-					this.stop();
+		remove: function remove(handler) {
+			var returnFunction;
+			for (var f = 0; f < functions.length; f++) {
+				if (functions[f].id === handler || functions[f].handler === handler) {
+					returnFunction = functions[f].handler;
+					functions.splice(f, 1);
+					f--;
 				}
 			}
-			return handlers;
+			if (this.autostart && functions.length === 0) {
+				this.stop();
+			}
+			return returnFunction;
 		},
 		debug: function debug() {
 			return {
