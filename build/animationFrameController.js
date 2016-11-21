@@ -6,7 +6,6 @@ var AnimationFrameController = function () {
 
 	var functions = [],
 	    animationFrame = false,
-	    paused = false,
 	    time = -1,
 	    id = 0;
 
@@ -30,6 +29,8 @@ var AnimationFrameController = function () {
 
 		if (animationFrame && functions.length) {
 			animationFrame = window.requestAnimationFrame(loop);
+		} else {
+			AF.stop();
 		}
 	}
 
@@ -37,14 +38,10 @@ var AnimationFrameController = function () {
 
 	var AF = {
 		start: function start() {
-			if (!animationFrame) {
-				animationFrame = window.requestAnimationFrame(loop);
-			}
+			animationFrame = window.requestAnimationFrame(loop);
 		},
 		stop: function stop() {
-			if (animationFrame) {
-				animationFrame = !!(window.cancelAnimationFrame(loop) && false);
-			}
+			animationFrame = !!(window.cancelAnimationFrame(animationFrame) && false);
 		},
 
 		get paused() {
@@ -90,9 +87,8 @@ var AnimationFrameController = function () {
 		},
 		debug: function debug() {
 			return {
-				'functions': functions,
-				'animationFrame': animationFrame,
-				'paused': paused,
+				'functions': functions.slice(),
+				'animationFrame': animationFrame || false,
 				'time': time
 			};
 		}
