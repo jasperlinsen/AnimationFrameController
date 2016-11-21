@@ -10,7 +10,7 @@ The controller will start executing your handlers as soon you add one to the con
 
     var functionId = AF.add( myFunction );
 
-The return value of add is an array of _identifiers_. To remove a function, simply pass back in the function itself or its identifier:
+The return value of `add()` is an array of _identifiers_. To remove a function, simply pass back in the function itself or its identifier:
 
     AF.remove( myFunction );	
 
@@ -20,12 +20,14 @@ or
 
 On top of that, the function can explicitly return the bool `false` if it is done:
 
-	function myFunction(){
+	function myFunction( delta, progress ){
 		count++;
 		if( count >= 100 ){ return false; }
 	}
+	
+As you can see above, your function receives two arguments: the `delta`, representing the delta time since the last call, and `progress`, which represents the time since your function was added, both in milliseconds.
 
-You can stop and start the animationFrameController by using the `AF.stop()` and `AF.start()` methods. The AnimationFrameController will start running animation frames as soon as a function gets added, and will stop when all functions have been removed.
+You can stop and start the animationFrameController by using the `.stop()` and `.start()` methods. The AnimationFrameController will start running animation frames as soon as a function gets added, and will stop when all functions have been removed.
 
 ## Debug
 
