@@ -1,95 +1,95 @@
-/*
- * AnimationFrameController 1.0
- */
+'use strict';
 
-class AnimationFrameController {
+const AnimationFrameController = function(){
 	
-	constructor( autostart = true ){
+	/* Private variables */
+	
+	var functions = [],
+		animationFrame = false,
+		paused = false,
+		time = -1,
+		id = 0;
+	
+	/* Main function loop */
+	
+	function loop( newTime ){
 		
-		this.autostart = true;
-		this.paused = true;
-		this.time = 0;
-		this.fps = 0;
-		
-		this.callees = [];
-		this.calleesTime = [];
-		
-	}
-	
-	get time(){
-		return this._time;
-	}
-	
-	set time(v){
-		this.fps = (v - this.time) / 1000;
-		this._time = v;
-		return this._time;
-	}
-	
-	get paused(){
-		return this._paused;
-	}
-	
-	set paused(v){
-		this._paused = v;
-		if( this._paused === false ){
-			this.loop( this.time );
-		} 
-	}
-	
-	add( ...handlers ){
-	
-		handlers.forEach( handler => {
-			if(handler instanceof Function){
-				this.callees.unshift( handler );
-				this.calleesTime.unshift( this.time );
+		for( let f = 0; f < functions.length; f++ ){
+			if( functions[f].time === -1 ){
+				functions[f].time = newTime;
+			} else {
+				let result = functions[f].handler( newTime - time, newTime - functions[f].time );
+				if( result === false ){
+					AF.remove( functions[f].id );
+					f--;
+				}
 			}
-		});
-		if(this.callees.length && this.autostart && this.paused) this.paused = false;
+		}
 		
-	}
-	
-	remove( ...handlers ){
-	
-		handlers.forEach( handler => {
-			let index = -1;
-			while((index = this.callees.lastIndexOf( handler )) >= 0){
-				this.callees.splice( index, 1 );
-				this.calleesTime.splice( index, 1 );
-			}
-		});
-		if(this.callees.length <= 0) this.paused = true;
+		time = newTime;
 		
-	}
-	
-	loop( time ){
-		
-		try {
-		
-			if( !this.paused ){
-		
-				window.requestAnimationFrame( this.loop.bind(this) );
-			
-				let delta = time - this.time;
-				this.time = time;
-			
-				this.callees.map(( handler, index ) => {
-					let progress = time - this.calleesTime[index];
-					return handler( delta, progress ) === false ? handler : true; 
-				}).forEach(handler => {
-					return handler !== true ? this.remove(handler) : 0; 
-				});
-			
-			}
-		
-		} catch(e) {
-		
-			this.paused = true;
-			console.warn('An error has occurred while running the AnimationFrame.', e);
-			
+		if( animationFrame && functions.length ){
+			animationFrame = window.requestAnimationFrame( loop );
 		}
 		
 	}
 	
+	/* Interface */
 	
-}
+	var AF = {
+		start(){
+			if( !animationFrame ){
+				animationFrame = window.requestAnimationFrame( loop );
+			}
+		},
+		stop(){
+			if( animationFrame ){
+				animationFrame = !!( window.cancelAnimationFrame( loop ) && false );
+			}
+		},
+		get paused(){
+			return !!animationFrame;
+		},
+		autostart: true,
+		add( ...handlers ){
+			for( let h = 0; h < handlers.length; h++ ){
+				functions.unshift({
+					'time': -1,
+					'handler': handlers[h],
+					'id': id++
+				});
+				handlers[h] = id;
+			}
+			if( this.autostart && functions.length ){
+				this.start();
+			}
+			return handlers;
+		},
+		remove( ...handlers ){
+			for( let h = 0; h < handlers.length; h++ ){
+				for( let f = 0; f < functions.length; f++ ){
+					if( functions[f].id === handlers[h] || functions[f].handler === handlers[h] ){
+						handlers[h] = functions[f].handler;
+						functions.splice( f, 1 );
+						f--;
+					}
+				}
+				if( this.autostart && functions.length === 0 ){
+					this.stop();
+				}
+			}
+			return handlers;
+		},
+		debug(){
+			return {
+				'functions': functions.slice(),
+				'animationFrame': animationFrame,
+				'paused': paused,
+				'time': time
+			}
+		}
+	};
+	
+	return AF;
+	
+}();
