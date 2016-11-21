@@ -19,7 +19,7 @@ var AnimationFrameController = function () {
 			} else {
 				var result = functions[f].handler(newTime - time, newTime - functions[f].time);
 				if (result === false) {
-					AF.remove([functions[f].id]);
+					AF.remove(functions[f].id);
 					f--;
 				}
 			}
@@ -60,10 +60,10 @@ var AnimationFrameController = function () {
 			}
 			return id;
 		},
-		remove: function remove(handler) {
+		remove: function remove(handlerOrId) {
 			var returnFunction;
 			for (var f = 0; f < functions.length; f++) {
-				if (functions[f].id === handler || functions[f].handler === handler) {
+				if (functions[f].id === handlerOrId || functions[f].handler === handlerOrId) {
 					returnFunction = functions[f].handler;
 					functions.splice(f, 1);
 					f--;
