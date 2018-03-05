@@ -1,4 +1,8 @@
 # AnimationFrameController
+
+> **NOTE** A newer, more accurate and frankly better version of this is available at github.com/jasperlinsen/controllers/animationFrame. Please consider upgrading to the newer version.
+
+
 Controller for `requestAnimationFrame`.
 
 ## Usage
